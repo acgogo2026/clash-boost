@@ -1,0 +1,57 @@
+name: Build Windows App
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - dev
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    name: Build Clash Boost Windows Installer
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 12.11.2
+
+      - name: Setup Rust Toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+
+      - name: Install Dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Prebuild External Resources & Mihomo Core
+        run: node scripts/prebuild.mjs x86_64-pc-windows-msvc
+
+      - name: Build Frontend
+        run: pnpm web:build
+
+      - name: Build Windows Desktop Client
+        run: pnpm build:fast
+        env:
+          NODE_OPTIONS: '--max-old-space-size=4096'
+
+      - name: Upload Windows Installation Package
+        uses: actions/upload-artifact@v4
+        with:
+          name: Clash-Boost-Windows-x64
+          path: |
+            src-tauri/target/release/clash-boost.exe
+            src-tauri/target/release/clash-verge.exe
+            src-tauri/target/release/bundle/nsis/*.exe
+            src-tauri/target/release/bundle/msi/*.msi

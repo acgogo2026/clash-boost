@@ -52,7 +52,9 @@ jobs:
           name: Clash-Boost-Windows-x64
           if-no-files-found: warn
           path: |
-            src-tauri/target/**/bundle/nsis/*.exe
-            src-tauri/target/**/bundle/msi/*.msi
-            src-tauri/target/**/release*/clash*.exe
-            src-tauri/target/**/release*/Clash*.exe
+            **/bundle/nsis/*.exe
+            **/bundle/msi/*.msi
+            **/fast-release/clash*.exe
+            **/fast-release/Clash*.exe
+            **/release/clash*.exe
+            **/release/Clash*.exe

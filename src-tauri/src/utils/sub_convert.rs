@@ -25,24 +25,25 @@ fn try_decode_base64(input: &str) -> Option<String> {
     }
 
     // Try standard base64 first
-    if let Ok(bytes) = STANDARD.decode(&clean)
-        && let Ok(text) = std::str::from_utf8(&bytes)
-        && text.is_ascii() || !text.contains('\0')
-    {
-        return Some(text.to_string());
+    if let Ok(bytes) = STANDARD.decode(&clean) {
+        if let Ok(text) = std::str::from_utf8(&bytes) {
+            if text.is_ascii() || !text.contains('\0') {
+                return Some(text.to_string());
+            }
+        }
     }
 
     // Try URL-safe base64
-    if let Ok(bytes) = URL_SAFE.decode(&clean)
-        && let Ok(text) = std::str::from_utf8(&bytes)
-    {
-        return Some(text.to_string());
+    if let Ok(bytes) = URL_SAFE.decode(&clean) {
+        if let Ok(text) = std::str::from_utf8(&bytes) {
+            return Some(text.to_string());
+        }
     }
 
-    if let Ok(bytes) = URL_SAFE_NO_PAD.decode(&clean)
-        && let Ok(text) = std::str::from_utf8(&bytes)
-    {
-        return Some(text.to_string());
+    if let Ok(bytes) = URL_SAFE_NO_PAD.decode(&clean) {
+        if let Ok(text) = std::str::from_utf8(&bytes) {
+            return Some(text.to_string());
+        }
     }
 
     None
